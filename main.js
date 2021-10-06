@@ -1,12 +1,9 @@
 status="";
-video="";
-function preload(){
-    video=createVideo("");
-    video.hide();
-}
 function setup(){
 canvas=createCanvas(480,300);
 canvas.center();
+video=createCapture(VIDEO);
+video.hide();
 }
 function draw(){
  image(video,0,0,480,300);
