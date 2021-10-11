@@ -1,4 +1,5 @@
 status="";
+objects=[];
 function setup(){
 canvas=createCanvas(480,300);
 canvas.center();
@@ -7,10 +8,44 @@ video.hide();
 }
 function draw(){
  image(video,0,0,480,300);
-}
+ if(status!=""){
+    objectDetector.detect(video,gotResult);
+    for(i=0;i<objects.length;i++){
+        document.getElementById("status").innerHTML="Status:Objects Detected";
+        fill("#08007a");
+        percent=floor(objects[i].confidence*100);
+        text(objects[i].label+" "+percent+"%",objects[i].x+15,objects[i].y+15);
+        noFill();
+        stroke("#08007a");
+        rect(objects[i].x,objects[i].y,objects[i].width,objects[i].height);
+        if (objects[i].label==object_name){
+        video.stop();
+        objectDetector.detect(gotResult);
+        document.getElementById("object_status").innerHTML=object_name+" Found ";
+        synth=window.speechSynthesis;
+        utter_this=new SpeechSynthesisUtterance(object_name+"found");
+        synth.speak(utter_this); 
+        }
+        else {
+            document.getElementById("object_status").innerHTML=object_name+" Not Found ";
+        }
+    }
+     }
+    }
+    function gotResult(error,results){
+        if(error){
+            console.log(error);
+        }
+        else{
+            console.log(results);
+            objects=results;
+        }
+    
+    }
 function start(){
 objectDetector=ml5.objectDetector('cocossd',modelLoaded);
 document.getElementById("status").innerHTML="Status:Detecting Objects";
+object_name=document.getElementById("object_name").value;
 }
 function modelLoaded(){
     console.log("Model Loaded");
